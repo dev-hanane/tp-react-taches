@@ -1,3 +1,4 @@
+
 import { useState } from 'react'
 
 import Entete from './components/Entete.jsx'
@@ -5,6 +6,9 @@ import ListeTaches from './components/ListeTaches.jsx'
 import Pied from './components/Pied.jsx'
 import Carte from './components/Carte.jsx'
 import Compteur from './components/Compteur.jsx'
+import FormulaireAjout from './components/FormulaireAjout.jsx'
+import Filtres from './components/Filtres.jsx'
+import Statistiques from './components/Statistiques.jsx'
 
 const TACHES_INITIALES = [
   { id: 1, titre: 'Installer Node.js et Vite', terminee: true },
@@ -16,6 +20,24 @@ const TACHES_INITIALES = [
 function App() {
   const [taches, setTaches] = useState(TACHES_INITIALES)
 
+  // État du filtre
+  const [filtre, setFiltre] = useState('toutes')
+
+  // Ajouter une tâche
+  function ajouterTache(titre) {
+    const nouvelleTache = {
+      id: Date.now(),
+      titre,
+      terminee: false
+    }
+
+    setTaches((anciennesTaches) => [
+      ...anciennesTaches,
+      nouvelleTache
+    ])
+  }
+
+  // Basculer l'état d'une tâche
   function basculerTache(id) {
     setTaches(
       taches.map((tache) =>
@@ -26,14 +48,29 @@ function App() {
     )
   }
 
+  // Supprimer une tâche
   function supprimerTache(id) {
     setTaches(
       taches.filter((tache) => tache.id !== id)
     )
   }
 
+  // Calculer les tâches visibles selon le filtre
+  const tachesVisibles = taches.filter((tache) => {
+    if (filtre === 'actives') {
+      return !tache.terminee
+    }
+
+    if (filtre === 'terminees') {
+      return tache.terminee
+    }
+
+    return true
+  })
+
   return (
     <div className="app">
+
       <Entete
         titre="Mes tâches"
         sousTitre="Mon premier projet React"
@@ -43,15 +80,32 @@ function App() {
         <Compteur />
       </Carte>
 
+      {/* Formulaire d'ajout */}
+      <Carte titre="Nouvelle tâche">
+        <FormulaireAjout onAjouter={ajouterTache} />
+      </Carte>
+
+      {/* Liste et filtres */}
       <Carte titre="Ma liste">
+        <Filtres
+          filtre={filtre}
+          onChanger={setFiltre}
+        />
+
         <ListeTaches
-          taches={taches}
+          taches={tachesVisibles}
           onBasculer={basculerTache}
           onSupprimer={supprimerTache}
         />
       </Carte>
 
+      {/* Statistiques */}
+      <Carte titre="Statistiques">
+        <Statistiques taches={taches} />
+      </Carte>
+
       <Pied auteur="HANANE CHAAOUAN" />
+
     </div>
   )
 }
