@@ -67,6 +67,17 @@ function App() {
     ])
   }
 
+  // Modifier le titre d'une tâche
+  function modifierTache(id, nouveauTitre) {
+    setTaches((anciennesTaches) =>
+      anciennesTaches.map((tache) =>
+        tache.id === id
+          ? { ...tache, titre: nouveauTitre }
+          : tache
+      )
+    )
+  }
+
   // Basculer l'état d'une tâche
   function basculerTache(id) {
     setTaches((anciennesTaches) =>
@@ -153,6 +164,7 @@ function App() {
               taches={tachesVisibles}
               onBasculer={basculerTache}
               onSupprimer={supprimerTache}
+              onModifier={modifierTache}
             />
           </>
         )}
